@@ -1,0 +1,16 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "description": "Web Socket Client Test",
+  "main": "app-client-1.js",
+  "scripts": {
+    "dev": "npx nodemon app-client-1.js"
+  },
+  "author": "Victor Oliveira",
+  "license": "ISC",
+  "dependencies": {
+    "nodemon": "^2.0.22",
+    "readline-sync": "^1.4.10",
+    "ws": "^8.13.0"
+  }
+}
