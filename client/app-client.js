@@ -40,29 +40,28 @@ function connectionClient() {
         "============================================================"
       );
       console.log({
-        id: dataString.id,
-        name: dataString.name,
-        tokenServerPayload: decodedServer,
+        id: decodedServer.id,
+        name: decodedServer.name,
         parameters: {
-          command: dataString.parameters.command,
-          field: dataString.parameters.field,
-          filter: dataString.parameters.filter,
-          status: dataString.parameters.status,
+          command: decodedServer.parameters.command,
+          field: decodedServer.parameters.field,
+          filter: decodedServer.parameters.filter,
+          status: decodedServer.parameters.status,
         },
       }); //use to execute some command
       console.log(
         "============================================================"
       );
-      const tokenClient = jwt.sign({ decodedServer }, secretKeyClient, {
+      const payloadCLient = {
+        id: decodedServer.id,
+        messageStatus: "finished",
+        status: 200,
+        finished: Date.now(),
+      };
+      const tokenClient = jwt.sign(payloadCLient, secretKeyClient, {
         expiresIn: process.env.EXPIRES_IN_JWT_CLIENT,
       });
-      const object = {
-        id: dataString.id,
-        tokenClient: tokenClient,
-        started: Date.now(),
-        status: 202,
-      };
-      ws.send(JSON.stringify(object));
+      ws.send(JSON.stringify({ tokenClient }));
     }
   });
 
