@@ -49,6 +49,13 @@ router.get("/", (request, response) => {
     return response.status(400).send(error.message);
   }
 });
+router.get("/api/commandList", (request, response) => {
+  try {
+    return response.status(200).json({ commandList });
+  } catch (error) {
+    return response.status(400).json({ error: error });
+  }
+});
 
 //secret key jwt
 const secretKeyServer = process.env.SECRET_KEY_JWT_SERVER;
@@ -56,6 +63,7 @@ const secretKeyClient = process.env.SECRET_KEY_JWT_CLIENT;
 
 //websocket clients
 const clients = new Map();
+const commandList = [];
 
 //websocket connection ...
 wss.on("connection", (ws, request) => {
@@ -73,24 +81,19 @@ wss.on("connection", (ws, request) => {
   clients.set(clientName, ws);
 
   router.post("/api/account_status", (req, res) => {
-    const { name } = req.body;
-    const websocket = clients.get(name);
+    const { user, client } = req.body; //'user' <=> server user name | 'client' <=> client name
+    const websocket = clients.get(client);
     try {
       if (websocket) {
+        const id = commandList.length + 1;
         const payloadServer = {
-          user: process.env.PAYLOAD_JWT_SERVER_USER,
-          password: process.env.PAYLOAD_JWT_SERVER_PASSWORD,
-          ip: process.env.PAYLOAD_JWT_SERVER_IP,
-          port: process.env.PAYLOAD_JWT_SERVER_PORT,
-          service: process.env.PAYLOAD_JWT_SERVER_SERVICE,
-        };
-        const tokenServer = jwt.sign(payloadServer, secretKeyServer, {
-          expiresIn: process.env.EXPIRES_IN_JWT_SERVER,
-        });
-        const object = {
-          id: process.env.OBJECT_COMMAND_ID,
+          //user: process.env.PAYLOAD_JWT_SERVER_USER,
+          //password: process.env.PAYLOAD_JWT_SERVER_PASSWORD,
+          //ip: process.env.PAYLOAD_JWT_SERVER_IP,
+          //port: process.env.PAYLOAD_JWT_SERVER_PORT,
+          //service: process.env.PAYLOAD_JWT_SERVER_SERVICE,
+          id: id,
           name: process.env.OBJECT_COMMAND_NAME,
-          tokenServer: tokenServer,
           parameters: {
             command: process.env.OBJECT_COMMAND_SQL,
             field: process.env.OBJECT_COMMAND_FIELD,
@@ -98,7 +101,21 @@ wss.on("connection", (ws, request) => {
             status: process.env.OBJECT_COMMAND_STATUS,
           },
         };
-        websocket.send(JSON.stringify(object));
+        const tokenServer = jwt.sign(payloadServer, secretKeyServer, {
+          expiresIn: process.env.EXPIRES_IN_JWT_SERVER,
+        });
+        websocket.send(JSON.stringify({ tokenServer }));
+        commandList.push({
+          id: id,
+          created_by: user,
+          client: client,
+          message_send: tokenServer,
+          message_result: null, //change on receipt
+          message_status: "started", //change on receipt
+          status: 202, //change on receipt
+          started: Date.now(),
+          finished: null, //change on receipt
+        });
         return res
           .status(200)
           .json({ message: "JSON object sent successfully." });
@@ -114,6 +131,18 @@ wss.on("connection", (ws, request) => {
     const dataString = JSON.parse(data.toString());
     if (dataString) {
       const decodedClient = jwt.verify(dataString.tokenClient, secretKeyClient);
+      const index = decodedClient.id - 1;
+      commandList[index] = {
+        id: commandList[index].id,
+        created_by: commandList[index].created_by,
+        client: commandList[index].client,
+        message_send: commandList[index].message_send,
+        message_result: dataString.tokenClient, //changed
+        message_status: decodedClient.messageStatus, //changed
+        status: decodedClient.status, //changed
+        started: commandList[index].started,
+        finished: decodedClient.finished, //changed
+      };
       console.log(
         "============================================================"
       );
@@ -122,10 +151,10 @@ wss.on("connection", (ws, request) => {
         "============================================================"
       );
       console.log({
-        id: dataString.id,
-        //tokenClientPayload: decodedClient, //=== serverPayload
-        started: dataString.started,
-        status: dataString.status,
+        id: decodedClient.id,
+        messageStatus: decodedClient.messageStatus,
+        status: decodedClient.status,
+        finished: decodedClient.finished,
       });
       console.log(
         "============================================================"
@@ -142,6 +171,8 @@ wss.on("connection", (ws, request) => {
     const socketId = request.headers["sec-websocket-key"];
     return socketId;
   }
+
+  //function get
 
   ws.on("close", (code) => {
     console.log("============================================================");
