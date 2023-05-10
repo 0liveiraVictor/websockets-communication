@@ -11,11 +11,14 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 const secretKeyServer = process.env.SECRET_KEY_JWT_SERVER;
 const secretKeyClient = process.env.SECRET_KEY_JWT_CLIENT;
 
-//websocket client instance
-const ws = new WebSocket(process.env.URL_WS_CLIENT);
+//reconnection interval client
+const setInterval = process.env.RECONNECTION_INTERVAL;
 
 //client connection function
-function connectionClient() {
+function connectionWebsocketClient() {
+  //websocket client instance
+  const ws = new WebSocket(process.env.URL_WS_CLIENT);
+
   ws.on("open", () => {
     console.log("============================================================");
     console.log("You are connected!");
@@ -29,9 +32,9 @@ function connectionClient() {
   });
 
   ws.on("message", (data, isBinary) => {
-    const dataString = JSON.parse(data.toString());
+    const dataString = data.toString();
     if (dataString) {
-      const decodedServer = jwt.verify(dataString.tokenServer, secretKeyServer);
+      const decodedServer = jwt.verify(dataString, secretKeyServer);
       console.log(
         "============================================================"
       );
@@ -61,7 +64,7 @@ function connectionClient() {
       const tokenClient = jwt.sign(payloadCLient, secretKeyClient, {
         expiresIn: process.env.EXPIRES_IN_JWT_CLIENT,
       });
-      ws.send(JSON.stringify({ tokenClient }));
+      ws.send(tokenClient);
     }
   });
 
@@ -69,7 +72,17 @@ function connectionClient() {
     console.log("============================================================");
     console.log(`[ID:${code}] - connection closed by server!`);
     console.log("============================================================");
+    setTimeout(() => {
+      console.log(
+        "============================================================"
+      );
+      console.log("Reconnecting...");
+      console.log(
+        "============================================================"
+      );
+      connectionWebsocketClient();
+    }, setInterval);
   });
 }
 
-connectionClient();
+connectionWebsocketClient();
