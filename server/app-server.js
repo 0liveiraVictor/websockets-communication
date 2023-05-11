@@ -166,11 +166,6 @@ function connectionWebsocketServer() {
       return clientName;
     }
 
-    //function getSocketIdFromRequest(request) {
-    //  const socketId = request.headers["sec-websocket-key"];
-    //  return socketId;
-    //}
-
     ws.on("close", (code) => {
       console.log(
         "============================================================"
