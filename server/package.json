@@ -4,7 +4,7 @@
   "description": "Web Socket Server Test",
   "main": "app-server.js",
   "scripts": {
-    "dev": "npx nodemon app-server.js"
+    "start": "npx nodemon app-server.js"
   },
   "author": "Victor Oliveira",
   "license": "ISC",
