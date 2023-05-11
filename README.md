@@ -190,6 +190,7 @@ For each client that wishes to connect to the websocket server, it will be neces
 
 <div style="display: flex; justify-content: space-around; align-items: center;">
   <div>
+<<<<<<< HEAD
     <p><strong>Made by Victor Oliveira.</strong></p>
     <a href="https://github.com/0liveiraVictor" style="display: inline-block; margin-right: 25px;">
       <img src="https://img.shields.io/badge/GitHub-Profile-black?logo=github" alt="GitHub">
@@ -198,6 +199,18 @@ For each client that wishes to connect to the websocket server, it will be neces
       <img src="https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin" alt="LinkedIn">
     </a>
   </div><br>
+=======
+    <p><strong>Made by Victor Oliveira.</strong></p><br>
+    <div style="display:flex; justify-content: space-between; align-items: center;">
+      <a href="https://github.com/0liveiraVictor" style="margin-right: 20px;">
+        <img src="https://img.shields.io/badge/GitHub-Profile-black?logo=github" alt="GitHub">
+      </a>
+      <a href="https://www.linkedin.com/in/oliveiravictorrs/">
+        <img src="https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin" alt="LinkedIn">
+      </a>
+    </div>
+  </div>
+>>>>>>> d5c5055 (docs: readme update)
   <div>
       <img src="https://avatars.githubusercontent.com/u/106946476?s=400&u=32d0a37dfe0b00021769868aa9483ed396468f81&v=4" alt="Victor0liveira" width="125" height="125">
   </div>
