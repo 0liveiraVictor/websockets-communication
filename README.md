@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="https://github.com/0liveiraVictor/websockets-communication/assets/106946476/91f56e19-07d0-4a29-821c-050a2e87879a" alt="websockets-communication">
+    <img src="https://github.com/0liveiraVictor/websockets-communication/assets/106946476/c743039c-baf6-467f-b949-d9b340ebdc82" alt="websockets" width="500" height="333.3">
 </div>
 <br>
 
